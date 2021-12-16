@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,6 +12,8 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text NameHighscore;
+    public TextMeshProUGUI playerNameNow;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -60,6 +63,17 @@ public class MainManager : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
+
+        playerNameNow.text = "Playing Now: " + PersistentData.Instance.GetChosenName();
+
+        if (PersistentData.Instance.GetChampionName() == null)
+        {
+            NameHighscore.text = "Best score: None. Be first!";
+        }
+        else
+        {
+            NameHighscore.text = "Best score: " + PersistentData.Instance.GetChampionName() + " : " + PersistentData.Instance.GetHighscore();
+        }
     }
 
     void AddPoint(int point)
@@ -70,6 +84,13 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        if (m_Points > PersistentData.Instance.GetHighscore())
+        {
+            PersistentData.Instance.HighscoreUpgrade(m_Points);
+            PersistentData.Instance.ChampionIsChosen(PersistentData.Instance.GetChosenName());
+            Debug.Log(PersistentData.Instance.GetChampionName());
+            PersistentData.Instance.SavingData();
+        }
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
